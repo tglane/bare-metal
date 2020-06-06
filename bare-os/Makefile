@@ -2,7 +2,6 @@ cc=i386-elf-g++
 
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-stack-protector
 
-
 SRCDIR=src
 OBJDIR=src
 SRCFILES := $(wildcard $(SRCDIR)/*.cpp)
@@ -17,6 +16,7 @@ boot.o: boot.asm
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	echo $@
 	$(cc) -c $< -o $@ $(CFLAGS)
+
 .PHONY: kernel
 kernel: $(OBJS) boot.o linker.ld
 	$(cc) -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o $(OBJS) -lgcc
