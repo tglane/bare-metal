@@ -1,21 +1,24 @@
-cc = i386-elf-g++
-ld = i386-elf-ld
+cc := i386-elf-g++
+ld := i386-elf-ld
 
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -fno-exceptions -fno-rtti -fno-threadsafe-statics -fno-stack-protector
 
+IMAGENAME := os_image
+
 BOOTDIR := boot
-SRCDIR := kernel
-OBJDIR := kernel
-SRCFILES := $(wildcard $(SRCDIR)/*.cc)
-OBJFILES := $(patsubst $(SRCDIR)/%.cc,$(OBJDIR)/%.o,$(SRCFILES))
+SRCDIR := src
+OBJDIR := src
+SRCFILES := $(wildcard $(SRCDIR)/*/*.cc)
+#OBJFILES := $(patsubst $(SRCDIR)/*/%.cc,$(OBJDIR)/*/%.o,$(SRCFILES))
+OBJFILES := ${SRCFILES:.cc=.o}
 
 .PHONY: image
 image: boot.bin kernel.bin
-	cat $^ > os_image
+	cat $^ > $(IMAGENAME)
 
 .PHONY: qemu
 qemu: image
-	qemu-system-x86_64 -fda os_image
+	qemu-system-x86_64 -fda $(IMAGENAME)
 
 boot.bin: $(BOOTDIR)/boot.asm
 	nasm $(BOOTDIR)/boot.asm -f bin -o boot.bin
@@ -23,7 +26,7 @@ boot.bin: $(BOOTDIR)/boot.asm
 kernel.bin: $(BOOTDIR)/kernel_entry.o $(OBJFILES)
 	$(ld) -o $@ -Ttext 0x1000 $^ --oformat binary
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cc
+%.o: %.cc
 	echo $@
 	$(cc) -c $< -o $@ $(CFLAGS)
 
@@ -35,6 +38,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cc
 
 .PHONY:clean
 clean:
-	rm -rf $(OBJDIR)/*.o $(BOOTDIR)/*.o
+	rm -rf $(OBJDIR)/*.o
+	rm -rf $(OBJDIR)/*/*.o $(BOOTDIR)/*.o
 	rm -rf ./*.bin
+	rm -rf $(IMAGENAME)
 
