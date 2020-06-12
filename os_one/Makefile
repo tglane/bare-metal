@@ -8,7 +8,8 @@ IMAGENAME := os_image
 BOOTDIR := boot
 SRCDIR := src
 OBJDIR := src
-SRCFILES := $(wildcard $(SRCDIR)/*/*.cc)
+INCLUDEDIR := include
+SRCFILES := $(wildcard $(SRCDIR)/*/*.cc) $(wildcard $(SRCDIR)/*/*/*.cc)
 #OBJFILES := $(patsubst $(SRCDIR)/*/%.cc,$(OBJDIR)/*/%.o,$(SRCFILES))
 OBJFILES := ${SRCFILES:.cc=.o}
 
@@ -28,7 +29,7 @@ kernel.bin: $(BOOTDIR)/kernel_entry.o $(OBJFILES)
 
 %.o: %.cc
 	echo $@
-	$(cc) -c $< -o $@ $(CFLAGS)
+	$(cc) -I$(INCLUDEDIR) -c $< -o $@ $(CFLAGS)
 
 %.o: %.asm
 	nasm $< -f elf -o $@
