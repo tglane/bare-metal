@@ -19,9 +19,6 @@ void* memcpy(void* dest, const void* src, size_t size)
     while(size--)
         *dest_ptr++ = *src_ptr++;
 
-    //for(uint32_t i = 0; i < size; i++)
-    //    dest_ptr[i] = src_ptr[i];
-
     return dest;
 }
 

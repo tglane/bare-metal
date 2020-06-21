@@ -19,6 +19,10 @@ public:
 
     void write(const char* string);
 
+    void write(uint32_t number);
+
+    void write_hex(uint32_t hex_number);
+
     void set_cursor(uint32_t x, uint32_t y)
     {
         m_x = x;

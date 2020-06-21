@@ -28,6 +28,34 @@ void TextModeWriter::write(const char* string)
     this->write(string, kernel::strlen(string));
 }
 
+void TextModeWriter::write(uint32_t number)
+{
+    char nstring[11];
+    uint8_t i = 0, j = 0;
+
+    while(number != 0)
+    {
+        nstring[i++] = (number % 10) + '0';
+        number /= 10;
+    }
+    nstring[i] = '\0';
+    i--;
+
+    while(nstring[j] != nstring[i])
+    {
+        char tmp = nstring[j];
+        nstring[j++] = nstring[i];
+        nstring[i--] = tmp;
+    }
+
+    this->write(nstring, kernel::strlen(nstring));
+}
+
+void TextModeWriter::write_hex(uint32_t hex_number)
+{
+    // TODO
+}
+
 void TextModeWriter::set_color(kernel::vga_color fg, kernel::vga_color bg)
 {
     m_color = fg | bg << 4;

@@ -10,23 +10,11 @@ extern "C" int main()
 {
     TextModeWriter t;
 
-    t.set_cursor(0, 17);
-    t.write("Hello World\nlul w");
-    t.newline();
-    t.write(" asdasdasd");
-    t.newline();
-    t.set_cursor(0, 22);
-    t.write("Hello Again!");
-    t.newline();
-    t.write("asd");
-    t.newline();
-    t.write("LUL");
-    t.newline();
-    t.write("bitte funktioniere");
-    t.newline();
-    t.write("asdasdasgsgdrg");
+    t.write("Starting kernel init");
+  
+    // asm volatile ("int $0x3");
 
-
-    return 0;
+    while(1);
+    return 0; 
 }
 

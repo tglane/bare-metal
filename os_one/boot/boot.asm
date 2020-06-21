@@ -3,6 +3,9 @@ KERNEL_OFFSET equ 0x1000    ; memory offset where kernel will be loaded later
 
     mov [BOOT_DRIVE], dl    ; BIOS stores boot drive in dl, store it for later
 
+    mov ax, 0x2401          ; enable A20 Line
+    int 0x15
+
     mov bp, 0x9000          ; set the initial stack bottom (bp = stack base register)
     mov sp, bp              ; set the stack pointer to the base (sp = stack pointer register)
     
@@ -114,13 +117,14 @@ load_kernel:
 
 ; GDT description
 ; GDT contains segmentation information for the 32 bit protected mode
+; implementing a flat memory model
 gdt_start:
 
 gdt_null:           ; the mandatory null descriptor
     dd 0x0          ; dd defines a double word (4 bytes)
     dd 0x0
 
-gdt_code:           ; code segment descriptor
+gdt_code:           ; kernel code segment descriptor
     ; base = 0x0, limit = 0xfffff, 1st flags: 1(present) 00(priviledge) 1(descriptor type) -> 1001b
     ; type flags: 1(code) 0(conforming) 1(readable) 0(accessed) -> 1010b
     ; 2nd flags: 1(granularity) 1(32-bit default) 0(64-bit segment) 0(AVL) -> 1100b
@@ -131,7 +135,7 @@ gdt_code:           ; code segment descriptor
     db 11001111b    ; 2nd flags and limit (bits 16 - 19)
     db 0x0          ; base (bits 24 - 31)
 
-gdt_data:           ; data segment descriptor
+gdt_data:           ; kernel data segment descriptor
     ; same structure as code segment except for the type flags:
     ; type flags: 0(code) 0(expand down) 1(writeable) 0(accessed) -> 0010b
     dw 0xffff       ; limit (bits 0 - 15)
@@ -141,10 +145,30 @@ gdt_data:           ; data segment descriptor
     db 11001111b    ; 2nd flags and limit (bits 16 - 19)
     db 0x0          ; base (bits 24 - 31)
 
+gdt_user_code:      ; user mode code segment
+    ; same structure as kernel code segment except for 1st flags:
+    ; 1(present) 11(priviledge) 1(descriptor type) -> 1111b
+    dw 0xffff       ; limit (bits 0 - 15)
+    dw 0x0          ; base (bits 0 - 15)
+    db 0x0          ; base (bits 16 - 23)
+    db 11111010b    ; 1st flgas and type flags
+    db 11001111b    ; 2nd flags and limit (bits 16 - 19)
+    db 0x0          ; base (bits 23 - 31)
+
+gdt_user_data:      ; user mode data segment
+    ; same structure as kernel data segment except for 1st flags:
+    ; 1(present) 11(priviledge) 1(descriptor type) -> 1111b
+    dw 0xffff       ; limit (bits 0 -15)
+    dw 0x0          ; base (bits 0 - 15)
+    db 0x0          ; base (bits 16 - 23)
+    db 11110010b    ; 1st flags and type flags
+    db 11001111b    ; 2nd flags and limit (bits 16 - 19)
+    db 0x0          ; base (bits 24 - 31)
+
 gdt_end:            ; define ending label to calculate the size of the complete gdt
 
 gdt_descriptor:     ; gdt descriptor
-    dw gdt_end - gdt_start          ; size of the gdt structure above, always one less than the true size
+    dw gdt_end - gdt_start - 1      ; size of the gdt structure above, always one less than the true size
     dd gdt_start                    ; start address of the gdt structure
 
 
@@ -221,6 +245,6 @@ MSG_REAL_MODE db "Started in 16-bit Real Mode", 0
 MSG_PROT_MODE db "Successfully switched to 32-bit Protected Mode", 0
 MSG_LOADING_KERNEL db "Loading kernel into memory", 0
 
-times 510 - ($-$$) db 0
-dw 0xaa55
+times 510 - ($-$$) db 0             ; fill remaining part of boot sector with zero
+dw 0xaa55                           ; two magic bytes to mark this as a boot sector
 
