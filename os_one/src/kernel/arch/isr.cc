@@ -1,14 +1,49 @@
 #include "kernel/arch/isr.h"
 
-#include "drivers/text_mode.h"
+#include "kernel/arch/idt.h"
+#include "drivers/ports.h"
+
+namespace kernel
+{
+
+InterruptHandler::InterruptHandler(uint32_t nr)
+    : m_interrupt_nr(nr)
+{
+    m_w.write("ok");
+    register_interrupt_handler(nr, this);
+}
 
 extern "C" {
 
-void isr_handler(isr_cpu_state cpu_state)
+InterruptHandler* interrupt_handler[256];
+
+void register_interrupt_handler(uint8_t n, InterruptHandler* handler)
 {
-    drivers::TextModeWriter t;
-    t.write("received interrupt: ");
-    t.write(cpu_state.int_no);
+    interrupt_handler[n] = handler;
+}
+
+void isr_handler(cpu_register_state regs)
+{
+    drivers::TextModeWriter& isr_writer = drivers::TextModeWriter::instance();
+    isr_writer.write("received interrupt: ");
+    isr_writer.write(regs.int_no);
+    isr_writer.newline();
+}
+
+void irq_handler(cpu_register_state regs)
+{
+    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
+    t.write("irq handler");
+
+    if(interrupt_handler[regs.int_no] != 0)
+        interrupt_handler[regs.int_no]->handle_interrupt(regs);
+
+    // Send end of interrupt (EOI) signal to the PICs
+    if(regs.int_no >= 40)
+        drivers::port_byte_out(PIC2_COMMAND, PIC_EOI);
+    drivers::port_byte_out(PIC1_COMMAND, PIC_EOI);
+}
+
 }
 
 }

@@ -12,8 +12,11 @@ namespace drivers {
 class TextModeWriter
 {
 public:
-
-    explicit TextModeWriter();
+    static TextModeWriter& instance()
+    {
+        static TextModeWriter instance;
+        return instance;
+    }
 
     void write(const char* string, size_t len);
 
@@ -41,13 +44,16 @@ public:
 
     void update();
 
-private:
+protected:
+    explicit TextModeWriter();
 
+private:
     void put_entry(char c, uint8_t color, uint32_t x, uint32_t y);
 
     kernel::VgaBuffer* m_vga = &kernel::VgaBuffer::instance();
 
     uint16_t m_buffer[VGA_WIDTH * VGA_HEIGHT];
+
     const uint32_t m_col = VGA_WIDTH, m_row = VGA_HEIGHT;
 
     uint32_t m_x = 0, m_y = 0;

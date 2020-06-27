@@ -42,8 +42,8 @@ kernel.bin: $(BOOTDIR)/kernel_entry.o $(SRCDIR)/kernel/arch/interrupt.o $(OBJFIL
 
 .PHONY:clean
 clean:
-	rm -rf $(OBJDIR)/*.o
-	rm -rf $(OBJDIR)/*/*.o 
+	rm -rf $(OBJFILES)
+	rm -rf $(SRCDIR)/kernel/arch/interrupt.o
 	rm -rf $(BOOTDIR)/*.o
 	rm -rf ./*.bin
 	rm -rf $(IMAGENAME)

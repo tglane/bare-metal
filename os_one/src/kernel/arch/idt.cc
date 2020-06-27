@@ -1,8 +1,8 @@
 #include "kernel/arch/idt.h"
 
-extern "C" void idt_flush(uint8_t);
-
 extern "C" {
+
+extern int idt_flush(uint32_t);
 
 static void idt_set_gate(uint8_t, uint32_t, uint16_t = 0x08, uint8_t = 0x8e);
 
@@ -49,6 +49,35 @@ void init_idt()
     idt_set_gate(30, (uint32_t) isr30);
     idt_set_gate(31, (uint32_t) isr31);
 
+    // Remap the irq table / rempat the pic
+    drivers::port_byte_out(PIC1_COMMAND, 0x11); // Start initialization in cascade mode
+    drivers::port_byte_out(PIC2_COMMAND, 0x11);
+    drivers::port_byte_out(PIC1_DATA, 0x20);    // Master PIC isr offset = 32
+    drivers::port_byte_out(PIC2_DATA, 0x28);    // Slave PIC isr offset = 40
+    drivers::port_byte_out(PIC1_DATA, 0x04);    // Tell master PIC that there is a slave at IRQ2
+    drivers::port_byte_out(PIC2_DATA, 0x02);    // Tell slave PIC its cascade identity
+    drivers::port_byte_out(PIC1_DATA, 0x01);    // Master PIC 8086/88 mode
+    drivers::port_byte_out(PIC2_DATA, 0x01);    // Slave PIC 8086/88 mode
+    drivers::port_byte_out(PIC1_DATA, 0x0);     // No older masks
+    drivers::port_byte_out(PIC2_DATA, 0x0);     // No older masks
+
+    idt_set_gate(32, (uint32_t) irq0);
+    idt_set_gate(33, (uint32_t) irq1);
+    idt_set_gate(34, (uint32_t) irq2);
+    idt_set_gate(35, (uint32_t) irq3);
+    idt_set_gate(36, (uint32_t) irq4);
+    idt_set_gate(37, (uint32_t) irq5);
+    idt_set_gate(38, (uint32_t) irq6);
+    idt_set_gate(39, (uint32_t) irq7);
+    idt_set_gate(40, (uint32_t) irq8);
+    idt_set_gate(41, (uint32_t) irq9);
+    idt_set_gate(42, (uint32_t) irq10);
+    idt_set_gate(43, (uint32_t) irq11);
+    idt_set_gate(44, (uint32_t) irq12);
+    idt_set_gate(45, (uint32_t) irq13);
+    idt_set_gate(46, (uint32_t) irq14);
+    idt_set_gate(47, (uint32_t) irq15);
+
     idt_flush((uint32_t) &IDT_ptr);
 }
 
@@ -57,9 +86,8 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t 
     IDT[num].offset_low = base & 0xffff;
     IDT[num].offset_high = (base << 16) & 0xffff;
     IDT[num].selector = selector;
-    IDT[num].zero = 0;
     // Uncomment when implementing user mode
-    // sets the interrupt gate's priviledge to level 3
+    // Sets the interrupt gate's priviledge to level 3
     IDT[num].flags = flags /* | 0x60 */;
 }
 
