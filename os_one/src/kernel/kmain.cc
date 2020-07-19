@@ -7,7 +7,7 @@
 #include "kernel/arch/timer.h"
 
 using drivers::TextModeWriter;
-using kernel::Timer;
+using kernel::p_i_timer;
 
 extern "C" int main()
 {
@@ -16,10 +16,10 @@ extern "C" int main()
     TextModeWriter& t = TextModeWriter::instance();
     t.write("Starting kernel init\n");
 
-    asm volatile ("int $0x3");
+    // asm volatile("int $0x4");
 
-    //t.write("\nAfter interrupt");
-    // Timer::instance().init(100);
+    // t.write("\nAfter interrupt");
+    // p_i_timer::instance().init(50);
 
     while(1);
     return 0; 

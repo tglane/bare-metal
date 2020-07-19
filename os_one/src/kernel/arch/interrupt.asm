@@ -2,6 +2,7 @@
 idt_flush:                          ; load interrupt descriptor table described in kernel/arch/interrupt
     mov edx, [esp + 4]
     lidt [edx]
+    sti
     ret
 
 %macro ISR_NO_ERRORCODE_HANDLER 1        ; define macro with one parameter

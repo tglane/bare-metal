@@ -2,6 +2,7 @@
 
 #include "kernel/arch/idt.h"
 #include "drivers/ports.h"
+#include "drivers/text_mode.h"
 
 namespace kernel
 {
@@ -9,7 +10,6 @@ namespace kernel
 InterruptHandler::InterruptHandler(uint32_t nr)
     : m_interrupt_nr(nr)
 {
-    m_w.write("ok");
     register_interrupt_handler(nr, this);
 }
 
@@ -32,9 +32,6 @@ void isr_handler(cpu_register_state regs)
 
 void irq_handler(cpu_register_state regs)
 {
-    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
-    t.write("irq handler");
-
     if(interrupt_handler[regs.int_no] != 0)
         interrupt_handler[regs.int_no]->handle_interrupt(regs);
 

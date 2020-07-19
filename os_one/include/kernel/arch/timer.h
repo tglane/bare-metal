@@ -11,21 +11,23 @@
 namespace kernel
 {
 
-class Timer : public InterruptHandler
+class p_i_timer : public InterruptHandler
 {
 public:
-    static Timer& instance()
+    static p_i_timer& instance()
     {
-        static Timer instance;
+        static p_i_timer instance;
         return instance;
     }
 
     void init(uint32_t frequency);
 
-    void handle_interrupt(cpu_register_state regs) override;
+    void handle_interrupt(const cpu_register_state& regs) override;
+
+    uint32_t get_ticks() { return m_ticks; }
 
 private:
-    Timer()
+    p_i_timer()
         : InterruptHandler(IRQ0)
     {}
 
@@ -33,7 +35,7 @@ private:
 
     uint32_t m_divisor;
 
-    uint32_t m_ticks;
+    uint32_t m_ticks = 0;
 
 };
 

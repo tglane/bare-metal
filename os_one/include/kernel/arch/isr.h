@@ -2,7 +2,6 @@
 #define KERNEL_ARCH_ISR_H
 
 #include <stdint.h>
-#include "drivers/text_mode.h"
 
 #define IRQ0 32
 #define IRQ1 33
@@ -38,14 +37,13 @@ class InterruptHandler
 public:
     InterruptHandler(uint32_t nr);
 
-    virtual void handle_interrupt(cpu_register_state regs)
+    virtual void handle_interrupt(const cpu_register_state& regs)
     {
-        m_w.write("lül?");
+        // Empty handler implemented by every derived class
     }
 
 private:
     uint32_t m_interrupt_nr;
-    drivers::TextModeWriter& m_w = drivers::TextModeWriter::instance();
 };
 
 
