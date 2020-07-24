@@ -7,22 +7,20 @@
 namespace kernel
 {
 
-InterruptHandler::InterruptHandler(uint32_t nr)
+interrupt_handler::interrupt_handler(uint32_t nr)
     : m_interrupt_nr(nr)
 {
     register_interrupt_handler(nr, this);
 }
 
-extern "C" {
+interrupt_handler* handler_table[256];
 
-InterruptHandler* interrupt_handler[256];
-
-void register_interrupt_handler(uint8_t n, InterruptHandler* handler)
+void register_interrupt_handler(uint8_t n, interrupt_handler* handler)
 {
-    interrupt_handler[n] = handler;
+    handler_table[n] = handler;
 }
 
-void isr_handler(cpu_register_state regs)
+extern "C" void isr_handler(cpu_register_state regs)
 {
     drivers::TextModeWriter& isr_writer = drivers::TextModeWriter::instance();
     isr_writer.write("received interrupt: ");
@@ -30,17 +28,15 @@ void isr_handler(cpu_register_state regs)
     isr_writer.newline();
 }
 
-void irq_handler(cpu_register_state regs)
+extern "C" void irq_handler(cpu_register_state regs)
 {
-    if(interrupt_handler[regs.int_no] != 0)
-        interrupt_handler[regs.int_no]->handle_interrupt(regs);
+    if(handler_table[regs.int_no] != 0)
+        handler_table[regs.int_no]->handle_interrupt(regs);
 
     // Send end of interrupt (EOI) signal to the PICs
     if(regs.int_no >= 40)
         drivers::port_byte_out(PIC2_COMMAND, PIC_EOI);
     drivers::port_byte_out(PIC1_COMMAND, PIC_EOI);
-}
-
 }
 
 }

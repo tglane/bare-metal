@@ -32,10 +32,10 @@ struct __attribute__((packed)) cpu_register_state
 };
 
 
-class InterruptHandler
+class interrupt_handler
 {
 public:
-    InterruptHandler(uint32_t nr);
+    interrupt_handler(uint32_t nr);
 
     virtual void handle_interrupt(const cpu_register_state& regs)
     {
@@ -47,15 +47,11 @@ private:
 };
 
 
-extern "C" {
+void register_interrupt_handler(uint8_t n, interrupt_handler* handler);
 
-void register_interrupt_handler(uint8_t n, InterruptHandler* handler);
+extern "C" void isr_handler(cpu_register_state regs);
 
-void isr_handler(cpu_register_state regs);
-
-void irq_handler(cpu_register_state regs);
-
-}
+extern "C" void irq_handler(cpu_register_state regs);
 
 }
 

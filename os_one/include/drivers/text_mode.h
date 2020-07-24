@@ -22,6 +22,8 @@ public:
 
     void write(const char* string);
 
+    void write(const char c);
+
     void write(uint32_t number);
 
     void write_hex(uint32_t hex_number);
@@ -58,7 +60,9 @@ private:
 
     uint32_t m_x = 0, m_y = 0;
 
-    uint8_t m_color = kernel::vga_color::VGA_COLOR_WHITE | kernel::vga_color::VGA_COLOR_BLACK << 4; 
+    uint8_t m_color = kernel::vga_color::VGA_COLOR_WHITE | kernel::vga_color::VGA_COLOR_BLACK << 4;
+
+    uint8_t m_tabsize = 4;
 
 };
 

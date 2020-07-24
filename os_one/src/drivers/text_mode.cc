@@ -9,15 +9,26 @@ TextModeWriter::TextModeWriter()
 
 void TextModeWriter::write(const char* string, size_t len)
 {
-    // TODO check for line overflow and newline
-    if(m_x + len > m_col);
+    if(m_x + len > m_col)
+    {
+        // TODO check for line overflow
+    }
 
     for(uint32_t i = 0; i < len; i++)
     {
-        if(string[i] == '\n')
-            this->newline();
-        else
-            this->put_entry(string[i], m_color, m_x++, m_y);
+        switch(string[i])
+        {
+            case '\n': 
+                this->newline();
+                break;
+            case '\t': 
+                for(uint8_t j = 0; j < m_tabsize; j++)
+                    this->put_entry(' ', m_color, m_x++, m_y);
+                break;
+            default:
+                this->put_entry(string[i], m_color, m_x++, m_y);
+                break;
+        }
     }
 
     this->update();
@@ -26,6 +37,11 @@ void TextModeWriter::write(const char* string, size_t len)
 void TextModeWriter::write(const char* string)
 {
     this->write(string, kernel::strlen(string));
+}
+
+void TextModeWriter::write(const char c)
+{
+    this->write(&c, 1);
 }
 
 void TextModeWriter::write(uint32_t number)
@@ -40,8 +56,8 @@ void TextModeWriter::write(uint32_t number)
     }
     nstring[i] = '\0';
     i--;
-
-    while(nstring[j] != nstring[i])
+    
+    while(j < i)
     {
         char tmp = nstring[j];
         nstring[j++] = nstring[i];

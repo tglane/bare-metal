@@ -11,7 +11,7 @@
 namespace kernel
 {
 
-class p_i_timer : public InterruptHandler
+class p_i_timer : public interrupt_handler
 {
 public:
     static p_i_timer& instance()
@@ -20,7 +20,7 @@ public:
         return instance;
     }
 
-    void init(uint32_t frequency);
+    void init(uint32_t frequency_hz);
 
     void handle_interrupt(const cpu_register_state& regs) override;
 
@@ -28,7 +28,7 @@ public:
 
 private:
     p_i_timer()
-        : InterruptHandler(IRQ0)
+        : interrupt_handler(IRQ0)
     {}
 
     drivers::TextModeWriter& m_writer = drivers::TextModeWriter::instance();
