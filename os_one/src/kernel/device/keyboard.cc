@@ -10,21 +10,25 @@ void ps2_keyboard::init()
     while(drivers::port_byte_in(KEYBOARD_COMMAND_PORT) & 0x1)
         drivers::port_byte_in(KEYBOARD_DATA_PORT);
 
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0xae); // activate interrupts
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x20); // read controller command byte
+    // activate interrupt
+    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0xae);
+    // read controller command byte
+    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x20);
     uint8_t status = (drivers::port_byte_in(KEYBOARD_DATA_PORT) | 1) & ~0x10;
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x60); // set controller command byte
+    // set controller command byte
+    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x60);
     drivers::port_byte_out(KEYBOARD_DATA_PORT, status);
     drivers::port_byte_out(KEYBOARD_DATA_PORT, 0xf4);
 }
 
 void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 {
+    // TODO make handler (textmodewriter in this case) interchangeable (set handler e.g.)
+    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
     uint8_t scancode = drivers::port_byte_in(KEYBOARD_DATA_PORT);
     char c;
-    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
 
-    // TODO
+    // TODO improve scancode handling (add missing codes, make keyboard layout exchangeable)
     if(scancode & 0x80)
     {
         // Key released
@@ -95,6 +99,7 @@ void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 
             default: break;
         }
+
         // TODO improve to upper
         if(m_caps && c) c -= 32;
         if(c) t.write(c);
