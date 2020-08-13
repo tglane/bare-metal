@@ -2,7 +2,7 @@
 #define KERNEL_DEVICE_KEYBOARD_H
 
 #include "kernel/arch/isr.h"
-#include "drivers/ports.h"
+#include "kernel/arch/ports.h"
 
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_COMMAND_PORT 0x64

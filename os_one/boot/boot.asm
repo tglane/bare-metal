@@ -1,6 +1,6 @@
 [org 0x7c00]                ; offset adresses by 0x7c00
-KERNEL_OFFSET equ 0x1000    ; memory offset where kernel will be loaded later
 
+KERNEL_OFFSET equ 0x1000    ; memory offset where kernel will be loaded later
     mov [BOOT_DRIVE], dl    ; BIOS stores boot drive in dl, store it for later
 
     mov ax, 0x2401          ; enable A20 Line
@@ -108,7 +108,7 @@ load_kernel:
     call print_string
 
     mov bx, KERNEL_OFFSET           ; bx stores the target adress to load the data into
-    mov dh, 15                      ; dh stores the number of sectors to read
+    mov dh, 25                      ; dh stores the number of sectors to read
     mov dl, [BOOT_DRIVE]            ; dl stores the disk to read from
     call disk_load
 
@@ -235,7 +235,7 @@ begin_prot_mode:
     mov ebx, MSG_PROT_MODE
     call print_string_pm
     
-    call KERNEL_OFFSET
+    call 0x1000
 
     jmp $                           ; hang
 
@@ -247,4 +247,3 @@ MSG_LOADING_KERNEL db "Loading kernel into memory", 0
 
 times 510 - ($-$$) db 0             ; fill remaining part of boot sector with zero
 dw 0xaa55                           ; two magic bytes to mark this as a boot sector
-

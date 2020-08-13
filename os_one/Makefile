@@ -15,7 +15,7 @@ OBJFILES := ${SRCFILES:.cc=.o}
 
 $(info $$var is [${OBJFILES}])
 
-.PHONY: image
+#.PHONY: image
 image: boot.bin kernel.bin
 	cat $^ > $(IMAGENAME)
 
@@ -27,7 +27,7 @@ boot.bin: $(BOOTDIR)/boot.asm
 	nasm $(BOOTDIR)/boot.asm -f bin -o boot.bin
 
 kernel.bin: $(BOOTDIR)/kernel_entry.o $(SRCDIR)/kernel/arch/interrupt.o $(OBJFILES)
-	$(ld) -o $@ -Ttext 0x1000 $^ --oformat binary
+	$(ld) -o $@ -T linker.ld $^ --oformat binary
 
 %.o: %.cc
 	echo $@
@@ -47,4 +47,3 @@ clean:
 	rm -rf $(BOOTDIR)/*.o
 	rm -rf ./*.bin
 	rm -rf $(IMAGENAME)
-

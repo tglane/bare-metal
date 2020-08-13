@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "kernel/memory/memory_util.h"
-#include "drivers/ports.h"
+#include "kernel/arch/ports.h"
 
 #define PIC1 0x20
 #define PIC2 0xA0

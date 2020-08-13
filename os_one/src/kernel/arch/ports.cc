@@ -1,6 +1,6 @@
-#include "drivers/ports.h"
+#include "kernel/arch/ports.h"
 
-namespace drivers
+namespace kernel { namespace arch
 {
 
 uint8_t port_byte_in(uint16_t port)
@@ -31,5 +31,4 @@ void port_word_out(uint16_t port, uint16_t data)
     asm("out %%ax, %%dx" : : "a" (data), "d" (port));
 }
 
-}
-
+}}

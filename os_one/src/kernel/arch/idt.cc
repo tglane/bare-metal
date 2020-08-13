@@ -50,16 +50,16 @@ void init_idt()
     idt_set_gate(31, (uint32_t) isr31);
 
     // Remap the irq table / rempat the pic
-    drivers::port_byte_out(PIC1_COMMAND, 0x11); // Start initialization in cascade mode
-    drivers::port_byte_out(PIC2_COMMAND, 0x11);
-    drivers::port_byte_out(PIC1_DATA, 0x20);    // Master PIC isr offset = 32
-    drivers::port_byte_out(PIC2_DATA, 0x28);    // Slave PIC isr offset = 40
-    drivers::port_byte_out(PIC1_DATA, 0x04);    // Tell master PIC that there is a slave at IRQ2
-    drivers::port_byte_out(PIC2_DATA, 0x02);    // Tell slave PIC its cascade identity
-    drivers::port_byte_out(PIC1_DATA, 0x01);    // Master PIC 8086/88 mode
-    drivers::port_byte_out(PIC2_DATA, 0x01);    // Slave PIC 8086/88 mode
-    drivers::port_byte_out(PIC1_DATA, 0x0);     // No older masks
-    drivers::port_byte_out(PIC2_DATA, 0x0);     // No older masks
+    kernel::arch::port_byte_out(PIC1_COMMAND, 0x11); // Start initialization in cascade mode
+    kernel::arch::port_byte_out(PIC2_COMMAND, 0x11);
+    kernel::arch::port_byte_out(PIC1_DATA, 0x20);    // Master PIC isr offset = 32
+    kernel::arch::port_byte_out(PIC2_DATA, 0x28);    // Slave PIC isr offset = 40
+    kernel::arch::port_byte_out(PIC1_DATA, 0x04);    // Tell master PIC that there is a slave at IRQ2
+    kernel::arch::port_byte_out(PIC2_DATA, 0x02);    // Tell slave PIC its cascade identity
+    kernel::arch::port_byte_out(PIC1_DATA, 0x01);    // Master PIC 8086/88 mode
+    kernel::arch::port_byte_out(PIC2_DATA, 0x01);    // Slave PIC 8086/88 mode
+    kernel::arch::port_byte_out(PIC1_DATA, 0x0);     // No older masks
+    kernel::arch::port_byte_out(PIC2_DATA, 0x0);     // No older masks
 
     idt_set_gate(32, (uint32_t) irq0);
     idt_set_gate(33, (uint32_t) irq1);

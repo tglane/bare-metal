@@ -7,20 +7,20 @@ namespace kernel
 
 void ps2_keyboard::init()
 {
-    while(drivers::port_byte_in(KEYBOARD_COMMAND_PORT) & 0x1)
-        drivers::port_byte_in(KEYBOARD_DATA_PORT);
+    while(kernel::arch::port_byte_in(KEYBOARD_COMMAND_PORT) & 0x1)
+        kernel::arch::port_byte_in(KEYBOARD_DATA_PORT);
 
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0xae); // activate interrupts
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x20); // read controller command byte
-    uint8_t status = (drivers::port_byte_in(KEYBOARD_DATA_PORT) | 1) & ~0x10;
-    drivers::port_byte_out(KEYBOARD_COMMAND_PORT, 0x60); // set controller command byte
-    drivers::port_byte_out(KEYBOARD_DATA_PORT, status);
-    drivers::port_byte_out(KEYBOARD_DATA_PORT, 0xf4);
+    kernel::arch::port_byte_out(KEYBOARD_COMMAND_PORT, 0xae); // activate interrupts
+    kernel::arch::port_byte_out(KEYBOARD_COMMAND_PORT, 0x20); // read controller command byte
+    uint8_t status = (kernel::arch::port_byte_in(KEYBOARD_DATA_PORT) | 1) & ~0x10;
+    kernel::arch::port_byte_out(KEYBOARD_COMMAND_PORT, 0x60); // set controller command byte
+    kernel::arch::port_byte_out(KEYBOARD_DATA_PORT, status);
+    kernel::arch::port_byte_out(KEYBOARD_DATA_PORT, 0xf4);
 }
 
 void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 {
-    uint8_t scancode = drivers::port_byte_in(KEYBOARD_DATA_PORT);
+    uint8_t scancode = kernel::arch::port_byte_in(KEYBOARD_DATA_PORT);
     char c;
     drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
 

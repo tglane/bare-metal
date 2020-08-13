@@ -1,7 +1,7 @@
 #include "kernel/arch/isr.h"
 
 #include "kernel/arch/idt.h"
-#include "drivers/ports.h"
+#include "kernel/arch/ports.h"
 #include "drivers/text_mode.h"
 
 namespace kernel
@@ -35,8 +35,8 @@ extern "C" void irq_handler(cpu_register_state regs)
 
     // Send end of interrupt (EOI) signal to the PICs
     if(regs.int_no >= 40)
-        drivers::port_byte_out(PIC2_COMMAND, PIC_EOI);
-    drivers::port_byte_out(PIC1_COMMAND, PIC_EOI);
+        kernel::arch::port_byte_out(PIC2_COMMAND, PIC_EOI);
+    kernel::arch::port_byte_out(PIC1_COMMAND, PIC_EOI);
 }
 
 }

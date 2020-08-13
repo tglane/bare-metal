@@ -1,4 +1,5 @@
 #include "drivers/text_mode.h"
+#include "kernel/arch/ports.h"
 
 namespace drivers {
 
@@ -86,8 +87,9 @@ void TextModeWriter::newline()
         kernel::memset(&m_buffer[m_y * m_col], 0x0000, m_row * sizeof(uint16_t));
     }
     else
+    {
         m_y++;
-
+    }
 }
 
 void TextModeWriter::clear()
