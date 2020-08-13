@@ -22,9 +22,8 @@ void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 {
     uint8_t scancode = kernel::arch::port_byte_in(KEYBOARD_DATA_PORT);
     char c;
-    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
 
-    // TODO
+    // TODO improve scancode handling (add missing codes, make keyboard layout exchangeable)
     if(scancode & 0x80)
     {
         // Key released
@@ -95,6 +94,7 @@ void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 
             default: break;
         }
+
         // TODO improve to upper
         if(m_caps && c) c -= 32;
         if(c) t.write(c);
