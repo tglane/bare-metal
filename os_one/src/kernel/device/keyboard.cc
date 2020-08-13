@@ -20,6 +20,8 @@ void ps2_keyboard::init()
 
 void ps2_keyboard::handle_interrupt(const cpu_register_state& regs)
 {
+    // Change so that the keyboard interrupt does not write directly to the screen buffer
+    drivers::TextModeWriter& t = drivers::TextModeWriter::instance();
     uint8_t scancode = kernel::arch::port_byte_in(KEYBOARD_DATA_PORT);
     char c;
 

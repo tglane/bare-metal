@@ -27,6 +27,8 @@ void TextModeWriter::write(const char* string, size_t len)
                     this->put_entry(' ', m_color, m_x++, m_y);
                 break;
             default:
+                if(m_x > m_col)
+                    this->newline();
                 this->put_entry(string[i], m_color, m_x++, m_y);
                 break;
         }

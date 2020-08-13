@@ -9,12 +9,12 @@ SECTIONS {
         *(.data)
 	}
     
-    .rodata :
+    .rodata : SUBALIGN(4)
     {
     	*(.rodata)
     }
 
-    .data :
+    .data : SUBALIGN(4)
     {
     	*(.data)
     }
@@ -26,9 +26,6 @@ SECTIONS {
     	*(.bss)
     }
     . = ALIGN(4);
-    /*__bss_end = .;
-    __bss_sizeb = __bss_end - __bss_start;
-    __bss_sizel = (__bss_end - _bss_start) / 4;*/
 
     /DISCARD/ : 
     {
